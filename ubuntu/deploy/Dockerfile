@@ -15,8 +15,8 @@ RUN aptArch="$(dpkg --print-architecture)"; \
             apt-add-repository "deb [arch=${aptArch}] https://apt.releases.hashicorp.com $(lsb_release -cs) main"; \
             apt-get update && apt-get install -y terraform;; \
         arm64) \
-            wget https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_arm64.zip; \
-            unzip terraform_1.0.11_linux_arm64.zip; \
+            wget https://releases.hashicorp.com/terraform/1.1.5/terraform_1.1.5_linux_arm64.zip; \
+            unzip terraform_1.1.5_linux_arm64.zip; \
             mv terraform /usr/local/bin/;; \
     esac; \
     apt-get update && apt-get install -y sshpass;
@@ -41,6 +41,4 @@ RUN bash -c 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/
 RUN pip3 install ansible-lint[core,yamllint]
 
 # install helm
-RUN curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
-    echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list && \
-    apt-get update && apt-get install helm
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash

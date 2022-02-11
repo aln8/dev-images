@@ -14,3 +14,7 @@ RUN rustup toolchain install nightly && \
 RUN rustup component add \
     cargo clippy rust-docs rls rust-src rust-analysis \
     rustfmt rustc rust-std
+
+# relace cargo source
+COPY .cargo/config /root/.cargo/config
+RUN cargo search serde 
