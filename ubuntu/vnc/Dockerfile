@@ -1,8 +1,5 @@
 FROM node-ubuntu-local:focal as build
 
-ARG HTTP_PROXY=http://host.docker.internal:7890
-ARG HTTPS_PROXY=http://host.docker.internal:7890
-
 WORKDIR /app
 RUN git clone --recurse-submodules https://github.com/fcwu/docker-ubuntu-vnc-desktop.git vnc
 RUN APT_ARCH=$(dpkg --print-architecture) && \
@@ -17,8 +14,6 @@ RUN APT_ARCH=$(dpkg --print-architecture) && \
 FROM ubuntu-local:base-focal
 
 ARG TINI_VERSION=v0.18.0
-ARG HTTP_PROXY=http://host.docker.internal:7890
-ARG HTTPS_PROXY=http://host.docker.internal:7890
 
 RUN apt update && \
         apt install -y apache2-utils supervisor nginx sudo net-tools zenity xz-utils \

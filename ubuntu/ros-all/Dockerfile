@@ -6,17 +6,18 @@ RUN . /etc/lsb-release && echo "deb http://mirrors.tuna.tsinghua.edu.cn/ros/ubun
     apt-get update && apt-get install ros-noetic-desktop-full -y
 
 # install ros2
-RUN . /etc/lsb-release && echo "deb http://mirrors.aliyun.com/ros2/ubuntu/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list && \
+RUN . /etc/lsb-release && echo "deb https://mirrors.tuna.tsinghua.edu.cn/ros2/ubuntu/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list && \
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
     apt-get update && apt-get install ros-foxy-desktop -y
 
 RUN apt-get install -y \
+        ros-foxy-rmw-cyclonedds-cpp \
         python3-colcon-common-extensions \
         libgoogle-glog-dev \
         locate \
         gdb && \
         updatedb
-        
+
 RUN pip3 install --upgrade urllib3==1.26.6 requests conan && \
         conan config set general.revisions_enabled=1 && \
         conan profile new default --detect && \

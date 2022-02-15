@@ -22,6 +22,12 @@ ubuntu-node:
 ubuntu-vnc:
 	cd ubuntu/vnc && make build
 
+ubuntu-vnc-ros1:
+	cd ubuntu/vnc && make build-ros1
+
+ubuntu-vnc-ros2:
+	cd ubuntu/vnc && make build-ros2
+
 ubuntu-net:
 	cd ubuntu/net-tool && make build
 
