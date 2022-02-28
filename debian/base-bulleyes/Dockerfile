@@ -11,7 +11,7 @@ RUN set -eux; \
     } > /etc/apt/sources.list; \
     apt update && apt install -y \
         curl wget git tree htop vim libzip-dev unzip jq fzf iputils-ping telnet apt-transport-https tzdata \
-        lsof net-tools rsync ca-certificates gnupg2 lsb-release software-properties-common locales zsh 
+        lsof net-tools rsync ca-certificates gnupg2 lsb-release software-properties-common locales locales-all zsh 
 
 # adjust tz to asia/shanghai
 ENV TZ=Asia/Shanghai \
@@ -21,5 +21,5 @@ ENV TZ=Asia/Shanghai \
 RUN ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime; \
     echo ${TZ} > /etc/timezone;
 
-RUN locale-gen en_US en_US.UTF-8 zh_CN zh_CN.UTF-8 && \
+RUN locale-gen en_US en_US.UTF-8 zh_CN zh_CN.UTF-8; \
     update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
