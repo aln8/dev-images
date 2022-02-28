@@ -9,19 +9,19 @@ RUN apt-get update && apt-get install -y ca-certificates; \
     aptArch="$(dpkg --print-architecture)"; \
     case "${aptArch}" in \
         amd64)  \
-            echo " \
-            deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse \n \  
-            deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse \n \
-            deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse \n \
-            deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse \n \
-            " > /etc/apt/sources.list;; \
+            { \
+                echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse"; \  
+                echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse"; \
+                echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse"; \
+                echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse"; \
+            } > /etc/apt/sources.list;; \
         arm64) \
-            echo " \
-            deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal main restricted universe multiverse \n \  
-            deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-updates main restricted universe multiverse \n \
-            deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-backports main restricted universe multiverse \n \
-            deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-security main restricted universe multiverse \n \
-            " > /etc/apt/sources.list;; \
+            { \
+                echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal main restricted universe multiverse"; \  
+                echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-updates main restricted universe multiverse"; \
+                echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-backports main restricted universe multiverse"; \
+                echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-security main restricted universe multiverse"; \
+            } > /etc/apt/sources.list;; \
     esac; \
     apt-get update && apt-get install -y \
         curl wget git tree htop vim libzip-dev unzip jq fzf iputils-ping telnet apt-transport-https tzdata \
