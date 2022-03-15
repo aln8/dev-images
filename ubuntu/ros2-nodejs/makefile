@@ -1,2 +1,5 @@
 build:
 	docker build -t ros2-nodejs-ubuntu-local:focal .
+
+buildx:
+	docker buildx build --build-arg DOCKER_REGISTRY=$${DOCKER_REGISTRY} --platform linux/amd64,linux/arm64 -t $${DOCKER_REGISTRY}/ros-foxy-node/base:v1 --push .

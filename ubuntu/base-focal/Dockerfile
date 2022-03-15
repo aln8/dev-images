@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y ca-certificates; \
     esac; \
     apt-get update && apt-get install -y \
         curl wget git tree htop vim libzip-dev unzip jq fzf iputils-ping telnet apt-transport-https tzdata \
-        lsof net-tools rsync ca-certificates gnupg2 lsb-release software-properties-common locales zsh 
+        lsof net-tools rsync ca-certificates gnupg2 lsb-release software-properties-common locales dnsutils zsh 
 
 # adjust tz to asia/shanghai
 RUN ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime; \

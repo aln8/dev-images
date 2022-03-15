@@ -1,7 +1,8 @@
-FROM node-ubuntu-local:focal as build
+ARG DOCKER_REGISTRY=""
+FROM ${DOCKER_REGISTRY}/ros-foxy-node/base:v1 as build
 
 WORKDIR /app
-RUN git clone --recurse-submodules https://github.com/fcwu/docker-ubuntu-vnc-desktop.git vnc
+RUN git clone --depth 1 --recurse-submodules https://github.com/fcwu/docker-ubuntu-vnc-desktop.git vnc
 RUN APT_ARCH=$(dpkg --print-architecture) && \
         npm install -g yarn && \
         mkdir -p /src && cp -r vnc/web /src/web && \
@@ -11,30 +12,8 @@ RUN APT_ARCH=$(dpkg --print-architecture) && \
             cd /src/web/dist/static/novnc && patch -p0 < /src/web/novnc-armhf-1.patch; \
         fi
 
-FROM ubuntu-local:base-focal
-
-# install ros
-RUN . /etc/lsb-release && echo "deb https://mirrors.tuna.tsinghua.edu.cn/ros2/ubuntu/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list && \
-    curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
-    apt-get update && apt-get install ros-foxy-desktop -y
-
-RUN apt-get install -y \
-        ros-foxy-rmw-cyclonedds-cpp \
-        python3-colcon-common-extensions \
-        libyaml-dev \
-        libgoogle-glog-dev \
-        libprotobuf-dev \
-        protobuf-compiler \
-        locate \
-        gdb && \
-        updatedb
-
-RUN pip3 install --upgrade urllib3==1.26.6 requests conan && \
-        conan config set general.revisions_enabled=1 && \
-        conan profile new default --detect && \
-        conan profile update settings.compiler.libcxx=libstdc++11 default
-
-RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc
+ARG DOCKER_REGISTRY=""
+FROM ${DOCKER_REGISTRY}/ros-foxy/base:v1
 
 ARG TINI_VERSION=v0.18.0
 
