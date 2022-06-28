@@ -16,7 +16,10 @@ ubuntu-ros2:
 	cd ${UBUNTU_DIR}ros2 && make build
 
 ubuntu-ros2-nodejs:
-	cd ${UBUNTU_DIR}ros2-nodejs && make build
+	cd ${UBUNTU_DIR}ros2-nodejs && make buildx
+
+ubuntu-ros2-rust:
+	cd ${UBUNTU_DIR}ros2-rust && make buildx
 
 ubuntu-ros-all:
 	cd ${UBUNTU_DIR}ros-all && make build

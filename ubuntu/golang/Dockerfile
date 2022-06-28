@@ -1,4 +1,5 @@
-FROM ubuntu-local:base-focal
+ARG DOCKER_REGISTRY=""
+FROM ${DOCKER_REGISTRY}/base/ubuntu-local:base-focal
 
 # default env just in case it not set
 ENV GO111MODULE on
