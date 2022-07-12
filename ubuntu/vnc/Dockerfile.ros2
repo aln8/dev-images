@@ -1,5 +1,5 @@
 ARG DOCKER_REGISTRY=""
-FROM ${DOCKER_REGISTRY}/ros-foxy-node/base:v1 as build
+FROM ${DOCKER_REGISTRY}/ros-foxy-node/base:v1.1 as build
 
 WORKDIR /app
 RUN git clone --depth 1 --recurse-submodules https://github.com/fcwu/docker-ubuntu-vnc-desktop.git vnc

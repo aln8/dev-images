@@ -3,5 +3,5 @@ build:
 
 # multi arch buildx
 buildx:
-	docker buildx build --platform linux/amd64,linux/arm64 -t $${DOCKER_REGISTRY}/base/ubuntu-local:base-focal --push .
+	docker buildx build --platform linux/amd64,linux/arm64 -t $${DOCKER_REGISTRY}/base/ubuntu-focal:v1.1 --push .
 	
