@@ -4,7 +4,7 @@ ubuntu-base:
 	cd ${UBUNTU_DIR}base-focal && make build
 
 ubuntu-golang:
-	cd ${UBUNTU_DIR}golang && make build
+	cd ${UBUNTU_DIR}golang && make buildx
 
 ubuntu-deploy:
 	cd ${UBUNTU_DIR}deploy && make build
