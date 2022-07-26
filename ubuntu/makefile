@@ -25,7 +25,7 @@ ubuntu-ros-all:
 	cd ${UBUNTU_DIR}ros-all && make build
 
 ubuntu-node:
-	cd ${UBUNTU_DIR}node && make build
+	cd ${UBUNTU_DIR}node && make buildx
 
 ubuntu-vnc:
 	cd ${UBUNTU_DIR}vnc && make build

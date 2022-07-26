@@ -1,4 +1,5 @@
-FROM ubuntu-local:base-focal
+ARG DOCKER_REGISTRY=""
+FROM ${DOCKER_REGISTRY}/base/ubuntu-focal:v1.1
 
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash
 
