@@ -1,0 +1,15 @@
+version: '3.0'
+
+services:
+  cpp:
+    image: ${DOCKER_REGISTRY}/ros-foxy-rust/base:v1.1
+    environment:
+      CMAKE_PREFIX_PATH: "/opt/ros/foxy"
+      CI_BOT_ARTIFACTORY_PASSWORD: ${CI_BOT_ARTIFACTORY_PASSWORD}
+      CI_BOT_USERNAME: ${CI_BOT_USERNAME}
+    volumes:
+      - ..:/app
+      - ~/.zshrc:/root/.zshrc
+      - ~/.oh-my-zsh/custom:/root/.oh-my-zsh/custom
+      - ~/.p10k.zsh:/root/.p10k.zsh
+    command: tail -f

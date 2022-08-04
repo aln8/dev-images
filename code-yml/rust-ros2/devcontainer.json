@@ -1,0 +1,13 @@
+{
+    "dockerComposeFile": "./local.yml",
+    "service": "cpp",
+    "workspaceFolder": "/app",
+    "extensions": [
+		"rust-lang.rust-analyzer",
+		"streetsidesoftware.code-spell-checker",
+		"coenraads.bracket-pair-colorizer-2",
+		"adrianwilczynski.switcher",
+		"robbowen.synthwave-vscode",
+		"eamodio.gitlens"
+	]
+}

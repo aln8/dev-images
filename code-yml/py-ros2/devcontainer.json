@@ -1,0 +1,18 @@
+{
+    "dockerComposeFile": "./local.yml",
+    "service": "cpp",
+    "workspaceFolder": "/app",
+    "extensions": [
+		"ms-python.python",		
+		"ms-vscode.cmake-tools",
+		"twxs.cmake",
+		"jeff-hykin.better-cpp-syntax",
+
+		// all code
+		"streetsidesoftware.code-spell-checker",
+		"coenraads.bracket-pair-colorizer-2",
+		"adrianwilczynski.switcher",
+		"robbowen.synthwave-vscode",
+		"eamodio.gitlens"
+	]
+}
