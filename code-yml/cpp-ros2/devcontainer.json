@@ -1,6 +1,6 @@
 {
     "dockerComposeFile": "./local.yml",
-    "service": "cpp",
+    "service": "app",
     "workspaceFolder": "/app",
     "extensions": [
 		"ms-vscode.cpptools",

@@ -1,7 +1,7 @@
 version: '3.0'
 
 services:
-  cpp:
+  app:
     image: ${DOCKER_REGISTRY}/ros-foxy-rust/base:v1.1
     environment:
       CMAKE_PREFIX_PATH: "/opt/ros/foxy"
