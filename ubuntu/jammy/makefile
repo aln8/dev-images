@@ -1,49 +1,46 @@
 UBUNTU_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-ubuntu-base:
-	cd ${UBUNTU_DIR}base-focal && make build
+jammy-base:
+	cd ${UBUNTU_DIR}base && make buildx
 
-ubuntu-golang:
+jammy-golang:
 	cd ${UBUNTU_DIR}golang && make buildx
 
-ubuntu-deploy:
-	cd ${UBUNTU_DIR}deploy && make build
+jammy-deploy:
+	cd ${UBUNTU_DIR}deploy && make buildx
 
-ubuntu-ros:
-	cd ${UBUNTU_DIR}ros && make build
+jammy-ros2:
+	cd ${UBUNTU_DIR}ros2 && make buildx
 
-ubuntu-ros2:
-	cd ${UBUNTU_DIR}ros2 && make build
-
-ubuntu-ros2-nodejs:
+jammy-ros2-nodejs:
 	cd ${UBUNTU_DIR}ros2-nodejs && make buildx
 
-ubuntu-ros2-rust:
+jammy-ros2-rust:
 	cd ${UBUNTU_DIR}ros2-rust && make buildx
 
-ubuntu-ros-all:
+jammy-ros-all:
 	cd ${UBUNTU_DIR}ros-all && make build
 
-ubuntu-node:
+jammy-node:
 	cd ${UBUNTU_DIR}node && make buildx
 
-ubuntu-vnc:
+jammy-vnc:
 	cd ${UBUNTU_DIR}vnc && make build
 
-ubuntu-vnc-ros1:
+jammy-vnc-ros1:
 	cd ${UBUNTU_DIR}vnc && make build-ros1
 
-ubuntu-vnc-ros2:
+jammy-vnc-ros2:
 	cd ${UBUNTU_DIR}vnc && make build-ros2
 
-ubuntu-net:
+jammy-net:
 	cd ${UBUNTU_DIR}net-tool && make build
 
-ubuntu-jdk11:
+jammy-jdk11:
 	cd ${UBUNTU_DIR}java && make build
 
-ubuntu-rust:
+jammy-rust:
 	cd ${UBUNTU_DIR}rust && make build
 
-ubuntu-perc-bionic:
+jammy-perc-bionic:
 	cd ${UBUNTU_DIR}perc-bionic && make build

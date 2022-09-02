@@ -18,7 +18,7 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
         "deb https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu \
         $(lsb_release -cs) \
         stable" && \
-    apt-get update && apt-get install -y docker-ce-cli
+    apt update && apt install -y docker-ce-cli
 
 # go dev tools
 RUN go install github.com/uudashr/gopkgs/...@latest && \

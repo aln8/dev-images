@@ -5,7 +5,7 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
     add-apt-repository \
         "deb https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu \
         $(lsb_release -cs) stable" && \
-    apt-get update && apt-get install -y docker-ce-cli
+    apt update && apt install -y docker-ce-cli
     
 # install terraform
 RUN aptArch="$(dpkg --print-architecture)"; \
@@ -13,15 +13,15 @@ RUN aptArch="$(dpkg --print-architecture)"; \
         amd64)  \
             curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - ; \
             apt-add-repository "deb [arch=${aptArch}] https://apt.releases.hashicorp.com $(lsb_release -cs) main"; \
-            apt-get update && apt-get install -y terraform;; \
+            apt update && apt install -y terraform;; \
         arm64) \
             wget https://releases.hashicorp.com/terraform/1.1.7/terraform_1.1.7_linux_arm64.zip; \
             unzip terraform_1.1.7_linux_arm64.zip; \
             mv terraform /usr/local/bin/;; \
     esac; \
-    apt-get update && apt-get install -y sshpass;
+    apt update && apt install -y sshpass;
 
-# install conanapt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+# install conanapt install apt-transport-https ca-certificates curl gnupg2 software-properties-common
 RUN pip3 install conan && \
         conan config set general.revisions_enabled=1 && \
         conan profile new default --detect && \
