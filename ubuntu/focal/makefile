@@ -13,7 +13,7 @@ focal-ros:
 	cd ${UBUNTU_DIR}ros && make build
 
 focal-ros2:
-	cd ${UBUNTU_DIR}ros2 && make build
+	cd ${UBUNTU_DIR}ros2 && make buildx
 
 focal-ros2-nodejs:
 	cd ${UBUNTU_DIR}ros2-nodejs && make buildx

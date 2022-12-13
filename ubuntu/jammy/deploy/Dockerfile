@@ -43,3 +43,17 @@ RUN pip3 install ansible-lint[core,yamllint]
 
 # install helm
 RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# install jsonnet
+RUN mkdir -p /tmp/jsonnet && cd /tmp/jsonnet; \
+    aptArch="$(dpkg --print-architecture)"; \
+    case "${aptArch}" in \
+        amd64)  \
+            curl -LO https://github.com/google/go-jsonnet/releases/download/v0.18.0/go-jsonnet_0.18.0_Linux_x86_64.tar.gz; \
+            tar -xvf go-jsonnet_0.18.0_Linux_x86_64.tar.gz;; \
+        arm64) \
+            curl -LO https://github.com/google/go-jsonnet/releases/download/v0.18.0/go-jsonnet_0.18.0_Linux_arm64.tar.gz; \
+            tar -xvf go-jsonnet_0.18.0_Linux_arm64.tar.gz;; \
+    esac; \
+    mv jsonnet jsonnetfmt /usr/local/bin/; \
+    cd - && rm -rf /tmp/jsonnet

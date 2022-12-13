@@ -1,5 +1,5 @@
 ARG DOCKER_REGISTRY=""
-FROM ${DOCKER_REGISTRY}/base/ubuntu-focal:v1.1
+FROM ${DOCKER_REGISTRY}/base/ubuntu-focal:v1.2
 
 # install ros
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg && \
@@ -24,12 +24,19 @@ RUN pip3 install --upgrade urllib3==1.26.6 requests conan && \
         conan profile new default --detect && \
         conan profile update settings.compiler.libcxx=libstdc++11 default
 
-# install osqp
+# install osqp & osqp egien
 WORKDIR /deps
-RUN git clone --depth 1 --branch release-0.5.0 \
+RUN git clone --depth 1 --branch v0.6.2 \
     --recursive https://github.com/osqp/osqp.git && \
-    cd osqp && mkdir build && cd build && cmake -G "Unix Makefiles" .. && \
-    cmake --build . --target install
+    cd osqp && mkdir build && cd build && cmake -DBUILD_SHARED_LIBS=ON .. && \
+    make && make install
+
+RUN git clone --depth 1 --branch v0.8.0 \
+    https://github.com/robotology/osqp-eigen.git && \
+    cd osqp-eigen && mkdir build && cd build && cmake .. && \
+    make && make install
+
 RUN ldconfig
 
 RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc
+WORKDIR /app
