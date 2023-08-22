@@ -1,5 +1,5 @@
 ARG DOCKER_REGISTRY=""
-FROM ${DOCKER_REGISTRY}/base/ubuntu-focal:v1.2
+FROM ${DOCKER_REGISTRY}/base/ubuntu/focal:v1.3
 
 # install ros
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg && \
@@ -19,7 +19,7 @@ RUN apt install -y \
         gdb && \
         updatedb
 
-RUN pip3 install --upgrade urllib3==1.26.6 requests conan && \
+RUN pip3 install --upgrade urllib3==1.26.6 requests conan==1.60.2 && \
         conan config set general.revisions_enabled=1 && \
         conan profile new default --detect && \
         conan profile update settings.compiler.libcxx=libstdc++11 default

@@ -1,5 +1,5 @@
 ARG DOCKER_REGISTRY=""
-FROM ${DOCKER_REGISTRY}/ros-humble/base:v1.0
+FROM ${DOCKER_REGISTRY}/ros-humble/base:v1.1
 
 # install libclang-dev for ros2-rust lib
 # lld will significantly reduce linking time

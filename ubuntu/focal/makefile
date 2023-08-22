@@ -15,6 +15,9 @@ focal-ros:
 focal-ros2:
 	cd ${UBUNTU_DIR}ros2 && make buildx
 
+focal-ros2-humble:
+	cd ${UBUNTU_DIR}ros2-humble && make buildx
+
 focal-ros2-nodejs:
 	cd ${UBUNTU_DIR}ros2-nodejs && make buildx
 
