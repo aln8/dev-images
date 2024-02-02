@@ -1,5 +1,5 @@
 ARG DOCKER_REGISTRY=""
-FROM ${DOCKER_REGISTRY}/base/ubuntu/jammy:v1.3
+FROM ${DOCKER_REGISTRY}/base/ubuntu/jammy:v1.4
 
 # install ros
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg && \
@@ -37,3 +37,4 @@ RUN git clone --depth 1 --branch v0.8.0 \
     make && make install
 
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+WORKDIR /app

@@ -2,9 +2,9 @@ version: '3.0'
 
 services:
   app:
-    image: ${DOCKER_REGISTRY}/ros-foxy-rust/base:v1.1
+    image: ${DOCKER_REGISTRY}/ros-humble-rust/base:v1.4
     environment:
-      CMAKE_PREFIX_PATH: "/opt/ros/foxy"
+      CMAKE_PREFIX_PATH: "/opt/ros/humble"
       CI_BOT_ARTIFACTORY_PASSWORD: ${CI_BOT_ARTIFACTORY_PASSWORD}
       CI_BOT_USERNAME: ${CI_BOT_USERNAME}
     volumes:

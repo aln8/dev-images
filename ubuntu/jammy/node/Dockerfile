@@ -1,5 +1,5 @@
 ARG DOCKER_REGISTRY=""
-FROM ${DOCKER_REGISTRY}/base/ubuntu/jammy:v1.0
+FROM ${DOCKER_REGISTRY}/base/ubuntu/jammy:v1.4
 
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash
 

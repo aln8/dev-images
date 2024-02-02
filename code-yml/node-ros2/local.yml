@@ -2,7 +2,7 @@ version: '3.0'
 
 services:
   app:
-    image: ${DOCKER_REGISTRY}/ros-foxy-node/base:v1.1
+    image: ${DOCKER_REGISTRY}/ros-foxy-node/base:v1.3
     environment:
       CMAKE_PREFIX_PATH: "/opt/ros/foxy"
       CI_BOT_ARTIFACTORY_PASSWORD: ${CI_BOT_ARTIFACTORY_PASSWORD}

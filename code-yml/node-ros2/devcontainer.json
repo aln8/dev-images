@@ -1,12 +1,17 @@
 {
-    "dockerComposeFile": "./local.yml",
-    "service": "app",
-    "workspaceFolder": "/app",
-    "extensions": [
-		"streetsidesoftware.code-spell-checker",
-		"coenraads.bracket-pair-colorizer-2",
-		"adrianwilczynski.switcher",
-		"robbowen.synthwave-vscode",
-		"eamodio.gitlens"
-	]
+  "dockerComposeFile": "./local.yml",
+  "service": "app",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // all code
+        "streetsidesoftware.code-spell-checker",
+        "alefragnani.Bookmarks",
+        "robbowen.synthwave-vscode",
+        "eamodio.gitlens",
+        "Codeium.codeium"
+      ]
+    }
+  }
 }
