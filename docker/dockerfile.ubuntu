@@ -1,0 +1,87 @@
+ARG OS_VERSION=focal
+ARG OS_ARCH
+FROM --platform=linux/${OS_ARCH} ubuntu:${OS_VERSION} AS base
+
+ENV TZ=Asia/Shanghai \
+  DEBIAN_FRONTEND=noninteractive \
+  LANG=en_US.UTF-8
+
+# install simple dev tools
+RUN apt update && apt install -y ca-certificates; \
+  case "${TARGETARCH}" in \
+  amd64)  \
+  sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list; \
+  sed -i "s@http://.*security.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list;; \
+  arm64) \
+  sed -i 's/ports.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list;; \
+  esac
+
+RUN apt update && apt install -y \
+  curl wget git libzip-dev unzip tzdata iputils-ping telnet net-tools lsof rsync gnupg2 \
+  htop locales build-essential apt-transport-https lsb-release software-properties-common \
+  libbz2-dev libboost-all-dev cmake g++ clang python-dev autotools-dev libicu-dev dnsutils \
+  python3-pip jq fzf fd-find zsh vim neovim; \
+  pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple;
+
+# config tz to asia/shanghai and update locales
+RUN ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime; \
+  echo ${TZ} > /etc/timezone; \
+  locale-gen en_US en_US.UTF-8 zh_CN zh_CN.UTF-8; \
+  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+
+# install oh my zsh
+RUN sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh)" && \
+  chsh -s /bin/zsh
+
+FROM base AS golang
+ARG OS_ARCH
+
+# default env just in case it not set
+ENV GOPROXY=https://goproxy.cn
+
+# install golang
+ENV PATH=${PATH}:/root/go/bin
+ENV GOVERSION=1.23.3
+RUN wget -L "https://mirrors.aliyun.com/golang/go${GOVERSION}.linux-${OS_ARCH}.tar.gz" \
+  && tar -C /root -xzf "go${GOVERSION}.linux-${OS_ARCH}.tar.gz"
+
+# go dev tools
+RUN go install github.com/uudashr/gopkgs/...@latest \
+  && go install github.com/haya14busa/goplay/...@latest \
+  && go install golang.org/x/tools/gopls@latest \
+  && go install github.com/cweill/gotests/...@latest \
+  && go install github.com/go-delve/delve/cmd/dlv@latest \
+  && go install github.com/josharian/impl@latest \
+  && go install honnef.co/go/tools/cmd/staticcheck@latest
+
+# protoc and golang proto tools
+RUN apt install -y protobuf-compiler \
+  && go install google.golang.org/protobuf/cmd/protoc-gen-go@latest \
+  && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest \
+  && go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest \
+  && go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest \
+  && go install github.com/google/wire/cmd/wire@latest
+
+# protoc google annotation
+RUN git clone https://gitee.com/mirrors/googleapis.git /root/googleapis && \
+  rm -rf /root/googleapis/.git
+
+FROM base AS node
+
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash
+
+RUN apt install -y nodejs
+
+# semantic release gitlab
+RUN npm install -g semantic-release \
+  @semantic-release/commit-analyzer \
+  @semantic-release/release-notes-generator \
+  @semantic-release/changelog \
+  @semantic-release/gitlab \
+  conventional-changelog-conventionalcommits \
+  @semantic-release/git
+
+# commitlint conventional
+RUN npm install -g commitlint \
+  @commitlint/config-conventional
+

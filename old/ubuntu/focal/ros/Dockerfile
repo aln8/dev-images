@@ -2,7 +2,7 @@ FROM ubuntu-local:base-focal
 
 # install ros
 RUN . /etc/lsb-release && echo "deb http://mirrors.tuna.tsinghua.edu.cn/ros/ubuntu/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list && \
-    apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
+    apt-key adv --keyserver 'ubuntu@111.231.16.142hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
     apt update && apt install ros-noetic-desktop-full -y
 
 RUN apt install -y \
