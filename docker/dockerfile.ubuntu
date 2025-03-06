@@ -1,6 +1,8 @@
 ARG OS_VERSION=focal
 ARG OS_ARCH
 FROM --platform=linux/${OS_ARCH} ubuntu:${OS_VERSION} AS base
+ARG OS_VERSION
+ARG OS_ARCH
 
 ENV TZ=Asia/Shanghai \
   DEBIAN_FRONTEND=noninteractive \
@@ -8,19 +10,26 @@ ENV TZ=Asia/Shanghai \
 
 # install simple dev tools
 RUN apt update && apt install -y ca-certificates; \
-  case "${TARGETARCH}" in \
+  if [ "${OS_VERSION}" = "noble" ]; then \
+  _target_source_list="/etc/apt/sources.list.d/ubuntu.sources"; \
+  else \
+  _target_source_list="/etc/apt/sources.list"; \
+  fi; \
+  case "${OS_ARCH}" in \
   amd64)  \
-  sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list; \
-  sed -i "s@http://.*security.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list;; \
+  sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" ${_target_source_list}; \
+  sed -i "s@http://.*security.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" ${_target_source_list}; \
+  ;; \
   arm64) \
-  sed -i 's/ports.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list;; \
+  sed -i 's/ports.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' ${_target_source_list}; \
+  ;; \
   esac
 
 RUN apt update && apt install -y \
   curl wget git libzip-dev unzip tzdata iputils-ping telnet net-tools lsof rsync gnupg2 \
   htop locales build-essential apt-transport-https lsb-release software-properties-common \
-  libbz2-dev libboost-all-dev cmake g++ clang python-dev autotools-dev libicu-dev dnsutils \
-  python3-pip jq fzf fd-find zsh vim neovim; \
+  libbz2-dev libboost-all-dev cmake g++ clang autotools-dev libicu-dev dnsutils \
+  python3-pip python3-venv jq fzf fd-find zsh vim neovim; \
   pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple;
 
 # config tz to asia/shanghai and update locales
@@ -30,20 +39,21 @@ RUN ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime; \
   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
 # install oh my zsh
-RUN sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh)" && \
-  chsh -s /bin/zsh
+RUN git config --global http.sslVerify false \
+  && sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh)" \
+  && chsh -s /bin/zsh
 
 FROM base AS golang
 ARG OS_ARCH
+ARG GO_VERSION
 
 # default env just in case it not set
 ENV GOPROXY=https://goproxy.cn
 
 # install golang
 ENV PATH=${PATH}:/root/go/bin
-ENV GOVERSION=1.23.3
-RUN wget -L "https://mirrors.aliyun.com/golang/go${GOVERSION}.linux-${OS_ARCH}.tar.gz" \
-  && tar -C /root -xzf "go${GOVERSION}.linux-${OS_ARCH}.tar.gz"
+RUN wget -L "https://mirrors.aliyun.com/golang/go${GO_VERSION}.linux-${OS_ARCH}.tar.gz" \
+  && tar -C /root -xzf "go${GO_VERSION}.linux-${OS_ARCH}.tar.gz"
 
 # go dev tools
 RUN go install github.com/uudashr/gopkgs/...@latest \
@@ -85,3 +95,153 @@ RUN npm install -g semantic-release \
 RUN npm install -g commitlint \
   @commitlint/config-conventional
 
+FROM base AS ros2
+ARG OS_VERSION
+ARG ROS_DISTRO
+
+RUN curl -sSL https://raw.staticdn.net/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] https://mirrors.aliyun.com/ros2/ubuntu ${OS_VERSION} main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
+  apt update && apt install ros-${ROS_DISTRO}-ros-base -y
+
+RUN apt install -y \
+  ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+  python3-colcon-common-extensions \
+  libyaml-dev \
+  libyaml-cpp-dev \
+  libpqxx-dev \
+  libgoogle-glog-dev \
+  libprotobuf-dev \
+  protobuf-compiler \
+  pipx \
+  locate \
+  gdb && \
+  pipx ensurepath && \
+  updatedb
+
+RUN bash -c "PATH=/root/.local/bin:$PATH && \
+  pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple && \
+  pipx install conan==1.66.0 && \
+  conan config set general.revisions_enabled=1 && \
+  conan profile new default --detect && \
+  conan profile update settings.compiler.libcxx=libstdc++11 default"
+
+# install osqp & osqp egien
+WORKDIR /deps
+RUN git clone --depth 1 --branch v0.6.2 \
+  --recursive https://github.com/osqp/osqp.git && \
+  cd osqp && mkdir build && cd build && cmake -DBUILD_SHARED_LIBS=ON .. && \
+  make && make install
+
+RUN git clone --depth 1 --branch v0.8.0 \
+  https://github.com/robotology/osqp-eigen.git && \
+  cd osqp-eigen && mkdir build && cd build && cmake .. && \
+  make && make install
+
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc
+WORKDIR /app
+
+FROM base AS ros2-build
+ARG OS_VERSION
+ARG ROS_BUILD_DISTRO
+
+RUN curl -sSL https://raw.staticdn.net/ros/rosdistro/master/ros.key  -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] https://mirrors.aliyun.com/ros2/ubuntu ${OS_VERSION} main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+RUN apt update && apt install -y \
+  libssl-dev libacl1-dev libtinyxml2-dev \
+  libasio-dev libeigen3-dev liblttng-ust-dev \
+  libtf2-bullet-dev \
+  libyaml-dev \
+  libyaml-cpp-dev \
+  libpqxx-dev \
+  libgoogle-glog-dev \
+  libprotobuf-dev \
+  protobuf-compiler \
+  pipx \
+  locate \
+  gdb && \
+  pipx ensurepath && \
+  updatedb
+
+RUN pip3 install flake8-blind-except \
+  flake8-class-newline \
+  flake8-deprecated \
+  mypy \
+  pip \
+  pytest \
+  pytest-cov \
+  pytest-mock \
+  pytest-repeat \
+  pytest-rerunfailures \
+  pytest-runner \
+  pytest-timeout
+
+RUN pip3 install colcon-argcomplete \
+  colcon-bash \
+  colcon-cd \
+  colcon-devtools \
+  colcon-installed-package-information \
+  colcon-library-path \
+  colcon-metadata \
+  colcon-mixin \
+  colcon-notification \
+  colcon-output \
+  colcon-override-check \
+  colcon-package-information \
+  colcon-package-selection \
+  colcon-parallel-executor \
+  colcon-pkg-config \
+  colcon-powershell \
+  colcon-python-setup-py \
+  colcon-recursive-crawl \
+  colcon-ros \
+  colcon-test-result \
+  colcon-zsh
+
+RUN pip3 install vcstool vcstools rosinstall_generator pkgconfig numpy lark psutil
+
+# build cmake
+RUN apt purge -y cmake && \
+  version=3.30 && \
+  build=8 && \
+  cd /tmp && \
+  wget https://cmake.org/files/v$version/cmake-$version.$build.tar.gz && \
+  tar -xzvf cmake-$version.$build.tar.gz && \
+  cd cmake-$version.$build/ && \
+  ./bootstrap && \
+  make -j$(nproc) && \
+  make install && \
+  ln -s /usr/local/bin/cmake /usr/bin/cmake && \
+  rm -rf /tmp/cmake-$version.$build.tar.gz
+
+# download source code
+RUN mkdir -p /tmp/ros/${ROS_BUILD_DISTRO}/src && \
+  cd /tmp/ros/${ROS_BUILD_DISTRO} && \
+  rosinstall_generator ros_base --rosdistro ${ROS_BUILD_DISTRO} --deps --format repos > ${ROS_BUILD_DISTRO}-base.repos && \
+  vcs import --input ${ROS_BUILD_DISTRO}-base.repos src && \
+  colcon build --merge-install --install-base /opt/ros/${ROS_BUILD_DISTRO} && \
+  rm -rf /tmp/ros
+
+RUN bash -c "PATH=/root/.local/bin:$PATH && \
+  pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple && \
+  pipx install conan==1.66.0 && \
+  conan config set general.revisions_enabled=1 && \
+  conan profile new default --detect && \
+  conan profile update settings.compiler.libcxx=libstdc++11 default"
+
+# install osqp & osqp egien
+WORKDIR /deps
+RUN git clone --depth 1 --branch v0.6.2 \
+  --recursive https://github.com/osqp/osqp.git && \
+  cd osqp && mkdir build && cd build && cmake -DBUILD_SHARED_LIBS=ON .. && \
+  make && make install && \
+  rm -rf /deps/osqp
+
+RUN git clone --depth 1 --branch v0.8.0 \
+  https://github.com/robotology/osqp-eigen.git && \
+  cd osqp-eigen && mkdir build && cd build && cmake .. && \
+  make && make install && \
+  rm -rf /deps/osqp-eigen
+
+RUN echo "source /opt/ros/${ROS_BUILD_DISTRO}/setup.bash" >> ~/.bashrc
+WORKDIR /app

@@ -1,0 +1,16 @@
+{
+  "dockerComposeFile": [
+    "./common.yml",
+    "./local.yml"
+  ],
+  "service": "app",
+
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+      ]
+    }
+  }
+}

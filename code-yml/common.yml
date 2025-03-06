@@ -1,0 +1,36 @@
+services:
+  init-app:
+    image: busybox
+    command:
+      - sh
+      - -c
+      - |
+        cp -arf /root/. ${HOME};
+        chown -R ${UID}:${GID} ${HOME};
+    volumes:
+      - dev-container-home:${HOME}
+  app:
+    user: ${UID}:${GID}
+    volumes:
+      - ..:/app:Z
+      - ~/.zshrc:${HOME}/.zshrc:ro
+      - ~/.oh-my-zsh:${HOME}/.oh-my-zsh:ro
+      - ~/.p10k.zsh:${HOME}/.p10k.zsh:ro
+      # user specific
+      - dev-container-home:${HOME}
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+    command: tail -f
+    environment:
+      CI_BOT_ARTIFACTORY_PASSWORD: ${CI_BOT_ARTIFACTORY_PASSWORD}
+      CI_BOT_USERNAME: ${CI_BOT_USERNAME}
+      http_proxy: http://host.docker.internal:7897
+      https_proxy: http://host.docker.internal:7897
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      init-app:
+        restart: false
+        condition: service_completed_successfully
+volumes:
+  dev-container-home:

@@ -22,6 +22,22 @@ variable "targets"{
   default = "base"
 }
 
+variable "ros_version" {
+  default = {
+    "focal": "foxy",
+    "jammy": "humble",
+    "noble": "jazzy"
+  }
+}
+
+variable "ros_build_ver" {
+    default = "jazzy"
+}
+
+variable "go_version" {
+    default = "1.24.0"
+}
+
 function "gen_targets" {
   params = []
   result = [for s in split(",", targets): trimspace(s)]
@@ -53,7 +69,7 @@ group "default" {
 
 target "_default_args" {
   platforms = gen_platforms()
-} 
+}
 
 target "ubuntu" {
   inherits = ["_default_args"]
@@ -68,6 +84,9 @@ target "ubuntu" {
   args = {
     OS_VERSION = os_ver
     OS_ARCH = manifest ? "amd64" : arch
+    ROS_DISTRO = ros_version[os_ver]
+    ROS_BUILD_DISTRO = ros_build_ver
+    GO_VERSION = go_version
   }
   tags = [ format(
     "%subuntu-${os_ver}-${tgt}:%s",
